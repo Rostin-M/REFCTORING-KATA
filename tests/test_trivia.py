@@ -69,6 +69,13 @@ class TestAddPlayer:
         game.add("Pat")
         assert game.how_many_players == 2
 
+    def test_internal_players_list_stays_in_sync_with_names(self):
+        game = Game()
+        game.add("Chet")
+        game.add("Pat")
+        assert [p.name for p in game._players] == ["Chet", "Pat"]
+        assert all(p.place == 0 and p.purse == 0 and p.in_penalty_box is False for p in game._players)
+
 
 class TestCurrentCategory:
     @pytest.mark.parametrize(
