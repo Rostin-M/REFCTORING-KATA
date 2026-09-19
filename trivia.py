@@ -25,6 +25,13 @@ class Game:
             self.sports_questions.append("Sports Question %s" % i)
             self.rock_questions.append(self.create_rock_question(i))
 
+        self._question_decks = {
+            'Pop': self.pop_questions,
+            'Science': self.science_questions,
+            'Sports': self.sports_questions,
+            'Rock': self.rock_questions,
+        }
+
     def create_rock_question(self, index):
         return "Rock Question %s" % index
 
@@ -74,10 +81,7 @@ class Game:
         self._ask_question()
 
     def _ask_question(self):
-        if self._current_category == 'Pop': print(self.pop_questions.pop(0))
-        if self._current_category == 'Science': print(self.science_questions.pop(0))
-        if self._current_category == 'Sports': print(self.sports_questions.pop(0))
-        if self._current_category == 'Rock': print(self.rock_questions.pop(0))
+        print(self._question_decks[self._current_category].pop(0))
 
     @property
     def _current_category(self):
