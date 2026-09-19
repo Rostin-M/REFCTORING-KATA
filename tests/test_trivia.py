@@ -44,24 +44,20 @@ class TestAddPlayer:
         assert "Chet was added" in out
         assert "They are player number 1" in out
 
-    def test_add_first_player_initializes_legacy_arrays_one_index_ahead(self):
-        # NOTA (defecto documentado, aun presente en los arrays legados que
-        # ya no maneja la logica del juego): add() lee self.how_many_players
-        # DESPUES de hacer append, asi que para el primer jugador
-        # (how_many_players pasa a valer 1) inicializa places/purses/
-        # in_penalty_box en el indice 1, no en el indice 0. El indice 0
-        # queda con los valores por defecto de __init__ ([0]*6), que
-        # coinciden por casualidad con los que se "querian" poner.
+    def test_add_first_player_state_starts_clean_at_index_zero(self):
+        # NOTA: el bug off-by-one del codigo original (add() escribia el
+        # estado del primer jugador en el indice 1, no en el 0, por leer
+        # self.how_many_players despues del append) desaparecio junto con
+        # los arrays paralelos que lo causaban (ver docs/01-analisis-code-smells.md,
+        # seccion 9 y el paso 7c del refactoring). Con Player, add() hace un
+        # simple append, asi que el primer jugador queda correctamente en el
+        # indice 0.
         game = Game()
         game.add("Chet")
 
-        assert game.places[1] == 0
-        assert game.purses[1] == 0
-        assert game.in_penalty_box[1] is False
-        # el indice 0 nunca fue tocado por add(), sigue en su valor inicial
-        assert game.places[0] == 0
-        assert game.in_penalty_box[0] == 0
-        assert game.in_penalty_box[0] is not False  # es int 0, no bool False
+        assert game._players[0].place == 0
+        assert game._players[0].purse == 0
+        assert game._players[0].in_penalty_box is False
 
     def test_how_many_players_reflects_count(self):
         game = Game()
