@@ -9,3 +9,4 @@ htmlcov/
 .sonar-token
 docker-compose.sonar.yml
 sonar-project.properties
+*.docx
