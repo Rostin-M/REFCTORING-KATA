@@ -5,3 +5,6 @@ __pycache__/
 .coverage
 htmlcov/
 .scannerwork/
+.sonar-token
+docker-compose.sonar.yml
+sonar-project.properties
