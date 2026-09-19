@@ -26,9 +26,9 @@ class Game:
         self.is_getting_out_of_penalty_box = False
 
         for i in range(50):
-            self.pop_questions.append("Pop Question %s" % i)
-            self.science_questions.append("Science Question %s" % i)
-            self.sports_questions.append("Sports Question %s" % i)
+            self.pop_questions.append(f"Pop Question {i}")
+            self.science_questions.append(f"Science Question {i}")
+            self.sports_questions.append(f"Sports Question {i}")
             self.rock_questions.append(self.create_rock_question(i))
 
         self._question_decks = {
@@ -39,7 +39,7 @@ class Game:
         }
 
     def create_rock_question(self, index):
-        return "Rock Question %s" % index
+        return f"Rock Question {index}"
 
     def is_playable(self):
         return self.how_many_players >= 2
@@ -49,7 +49,7 @@ class Game:
         self._players.append(Player(player_name))
 
         print(player_name + " was added")
-        print("They are player number %s" % len(self.players))
+        print(f"They are player number {len(self.players)}")
 
         return True
 
@@ -62,17 +62,17 @@ class Game:
         return self._players[self.current_player]
 
     def roll(self, roll):
-        print("%s is the current player" % self.players[self.current_player])
-        print("They have rolled a %s" % roll)
+        print(f"{self.players[self.current_player]} is the current player")
+        print(f"They have rolled a {roll}")
 
         if self._current_player_obj.in_penalty_box:
             if roll % 2 != 0:
                 self.is_getting_out_of_penalty_box = True
 
-                print("%s is getting out of the penalty box" % self.players[self.current_player])
+                print(f"{self.players[self.current_player]} is getting out of the penalty box")
                 self._move_current_player_and_ask_question(roll)
             else:
-                print("%s is not getting out of the penalty box" % self.players[self.current_player])
+                print(f"{self.players[self.current_player]} is not getting out of the penalty box")
                 self.is_getting_out_of_penalty_box = False
         else:
             self._move_current_player_and_ask_question(roll)
@@ -82,10 +82,8 @@ class Game:
         if self._current_player_obj.place > 11:
             self._current_player_obj.place = self._current_player_obj.place - 12
 
-        print(self.players[self.current_player] + \
-                    '\'s new location is ' + \
-                    str(self._current_player_obj.place))
-        print("The category is %s" % self._current_category)
+        print(f"{self.players[self.current_player]}'s new location is {self._current_player_obj.place}")
+        print(f"The category is {self._current_category}")
         self._ask_question()
 
     def _ask_question(self):
@@ -108,10 +106,7 @@ class Game:
     def _award_coin_and_advance_turn(self, message):
         print(message)
         self._current_player_obj.purse += 1
-        print(self.players[self.current_player] + \
-            ' now has ' + \
-            str(self._current_player_obj.purse) + \
-            ' Gold Coins.')
+        print(f"{self.players[self.current_player]} now has {self._current_player_obj.purse} Gold Coins.")
 
         winner = self._did_player_win()
         self._advance_turn()
@@ -131,7 +126,7 @@ class Game:
         return True
 
     def _did_player_win(self):
-        return not (self._current_player_obj.purse == 6)
+        return self._current_player_obj.purse != 6
 
 
 from random import randrange
