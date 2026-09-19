@@ -59,3 +59,9 @@ Se identificó como código muerto / generalidad especulativa desde el análisis
 ### Historial de commits del refactoring
 
 Se puede evidenciar el refactoring realizado en cada uno de los commits realizados.
+
+## 11. Resultado en SonarQube "después"
+
+Con el proyecto completo (código refactorizado + tests) y la cobertura real cargada, SonarQube reporta: **0 code smells, 0 bugs, 0% duplicación, 100% de cobertura**.
+
+Sí aparecen **2 "vulnerabilities"** (regla `python:S2245`, líneas 144 y 146 del bloque `__main__`), que marca cualquier uso de `random.randrange` como "sensible a seguridad" por si se usara para generar tokens o contraseñas. En este caso solo simula el dado de un juego de mesa, así que es un **falso positivo revisado**: ya estaba presente en el código original (se confirmó con `git diff` que esas líneas nunca se modificaron durante el refactoring) y no representa un riesgo real para este uso. No se remedia porque está fuera del alcance del ejercicio y cambiar a `secrets`/`SystemRandom` sería una sobreingeniería injustificada para simular un dado.
