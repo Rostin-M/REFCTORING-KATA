@@ -3,8 +3,7 @@ Tests de caracterizacion del juego de Trivia (trivia.py) ANTES del refactoring.
 
 Objetivo: fijar el comportamiento observable actual (incluyendo defectos y
 particularidades que se descubren al probar) para poder refactorizar con una
-red de seguridad. No se corrige ningun comportamiento aqui, solo se documenta
-lo que el codigo realmente hace hoy.
+red de seguridad.
 """
 import sys
 import os
@@ -45,8 +44,9 @@ class TestAddPlayer:
         assert "Chet was added" in out
         assert "They are player number 1" in out
 
-    def test_add_first_player_initializes_state_one_index_ahead(self):
-        # NOTA (defecto documentado): add() lee self.how_many_players
+    def test_add_first_player_initializes_legacy_arrays_one_index_ahead(self):
+        # NOTA (defecto documentado, aun presente en los arrays legados que
+        # ya no maneja la logica del juego): add() lee self.how_many_players
         # DESPUES de hacer append, asi que para el primer jugador
         # (how_many_players pasa a valer 1) inicializa places/purses/
         # in_penalty_box en el indice 1, no en el indice 0. El indice 0
@@ -90,7 +90,7 @@ class TestCurrentCategory:
     def test_category_by_place(self, place, expected):
         game = Game()
         game.add("Chet")
-        game.places[0] = place
+        game._players[0].place = place
         assert game._current_category == expected
 
 
@@ -98,35 +98,35 @@ class TestAskQuestion:
     def test_ask_question_pop(self, capsys):
         game = Game()
         game.add("Chet")
-        game.places[0] = 0
+        game._players[0].place = 0
         game._ask_question()
         assert "Pop Question 0" in capsys.readouterr().out
 
     def test_ask_question_science(self, capsys):
         game = Game()
         game.add("Chet")
-        game.places[0] = 1
+        game._players[0].place = 1
         game._ask_question()
         assert "Science Question 0" in capsys.readouterr().out
 
     def test_ask_question_sports(self, capsys):
         game = Game()
         game.add("Chet")
-        game.places[0] = 2
+        game._players[0].place = 2
         game._ask_question()
         assert "Sports Question 0" in capsys.readouterr().out
 
     def test_ask_question_rock(self, capsys):
         game = Game()
         game.add("Chet")
-        game.places[0] = 3
+        game._players[0].place = 3
         game._ask_question()
         assert "Rock Question 0" in capsys.readouterr().out
 
     def test_ask_question_pops_from_the_deck_in_order(self, capsys):
         game = Game()
         game.add("Chet")
-        game.places[0] = 0
+        game._players[0].place = 0
         game._ask_question()
         game._ask_question()
         out = capsys.readouterr().out
@@ -142,7 +142,7 @@ class TestRoll:
 
         game.roll(3)
 
-        assert game.places[0] == 3
+        assert game._players[0].place == 3
         out = capsys.readouterr().out
         assert "Chet is the current player" in out
         assert "They have rolled a 3" in out
@@ -153,22 +153,22 @@ class TestRoll:
         game = Game()
         game.add("Chet")
         game.add("Pat")
-        game.places[0] = 10
+        game._players[0].place = 10
 
         game.roll(3)
 
-        assert game.places[0] == 1  # 10 + 3 = 13 -> 13 - 12 = 1
+        assert game._players[0].place == 1  # 10 + 3 = 13 -> 13 - 12 = 1
 
     def test_roll_in_penalty_box_with_odd_roll_gets_out_and_moves(self, capsys):
         game = Game()
         game.add("Chet")
         game.add("Pat")
-        game.in_penalty_box[0] = True
+        game._players[0].in_penalty_box = True
 
         game.roll(3)
 
         assert game.is_getting_out_of_penalty_box is True
-        assert game.places[0] == 3
+        assert game._players[0].place == 3
         out = capsys.readouterr().out
         assert "Chet is getting out of the penalty box" in out
 
@@ -176,24 +176,24 @@ class TestRoll:
         game = Game()
         game.add("Chet")
         game.add("Pat")
-        game.in_penalty_box[0] = True
-        game.places[0] = 10
+        game._players[0].in_penalty_box = True
+        game._players[0].place = 10
 
         game.roll(3)
 
-        assert game.places[0] == 1  # 10 + 3 = 13 -> wraps to 1
+        assert game._players[0].place == 1  # 10 + 3 = 13 -> wraps to 1
 
     def test_roll_in_penalty_box_with_even_roll_stays_in(self, capsys):
         game = Game()
         game.add("Chet")
         game.add("Pat")
-        game.in_penalty_box[0] = True
-        place_before = game.places[0]
+        game._players[0].in_penalty_box = True
+        place_before = game._players[0].place
 
         game.roll(4)
 
         assert game.is_getting_out_of_penalty_box is False
-        assert game.places[0] == place_before
+        assert game._players[0].place == place_before
         out = capsys.readouterr().out
         assert "Chet is not getting out of the penalty box" in out
 
@@ -207,7 +207,7 @@ class TestWasCorrectlyAnswered:
         result = game.was_correctly_answered()
 
         assert result is True
-        assert game.purses[0] == 1
+        assert game._players[0].purse == 1
         assert game.current_player == 1
         out = capsys.readouterr().out
         # NOTA: el typo original ("corrent") fue corregido a "correct" como
@@ -230,24 +230,24 @@ class TestWasCorrectlyAnswered:
         game = Game()
         game.add("Chet")
         game.add("Pat")
-        game.purses[0] = 5
+        game._players[0].purse = 5
 
         result = game.was_correctly_answered()
 
-        assert game.purses[0] == 6
+        assert game._players[0].purse == 6
         assert result is False
 
     def test_penalty_box_getting_out_correct_answer_awards_coin(self, capsys):
         game = Game()
         game.add("Chet")
         game.add("Pat")
-        game.in_penalty_box[0] = True
+        game._players[0].in_penalty_box = True
         game.is_getting_out_of_penalty_box = True
 
         result = game.was_correctly_answered()
 
         assert result is True
-        assert game.purses[0] == 1
+        assert game._players[0].purse == 1
         assert game.current_player == 1
         out = capsys.readouterr().out
         assert "Answer was correct!!!!" in out
@@ -257,7 +257,7 @@ class TestWasCorrectlyAnswered:
         game.add("Chet")
         game.add("Pat")
         game.current_player = 1
-        game.in_penalty_box[1] = True
+        game._players[1].in_penalty_box = True
         game.is_getting_out_of_penalty_box = True
 
         game.was_correctly_answered()
@@ -268,13 +268,13 @@ class TestWasCorrectlyAnswered:
         game = Game()
         game.add("Chet")
         game.add("Pat")
-        game.in_penalty_box[0] = True
+        game._players[0].in_penalty_box = True
         game.is_getting_out_of_penalty_box = False
 
         result = game.was_correctly_answered()
 
         assert result is True
-        assert game.purses[0] == 0
+        assert game._players[0].purse == 0
         assert game.current_player == 1
 
     def test_penalty_box_not_getting_out_wraps_turn(self):
@@ -282,7 +282,7 @@ class TestWasCorrectlyAnswered:
         game.add("Chet")
         game.add("Pat")
         game.current_player = 1
-        game.in_penalty_box[1] = True
+        game._players[1].in_penalty_box = True
         game.is_getting_out_of_penalty_box = False
 
         game.was_correctly_answered()
@@ -299,7 +299,7 @@ class TestWrongAnswer:
         result = game.wrong_answer()
 
         assert result is True
-        assert game.in_penalty_box[0] is True
+        assert game._players[0].in_penalty_box is True
         assert game.current_player == 1
         out = capsys.readouterr().out
         assert "Question was incorrectly answered" in out

@@ -63,11 +63,15 @@ class Game:
     def how_many_players(self):
         return len(self.players)
 
+    @property
+    def _current_player_obj(self):
+        return self._players[self.current_player]
+
     def roll(self, roll):
         print("%s is the current player" % self.players[self.current_player])
         print("They have rolled a %s" % roll)
 
-        if self.in_penalty_box[self.current_player]:
+        if self._current_player_obj.in_penalty_box:
             if roll % 2 != 0:
                 self.is_getting_out_of_penalty_box = True
 
@@ -80,13 +84,13 @@ class Game:
             self._move_current_player_and_ask_question(roll)
 
     def _move_current_player_and_ask_question(self, roll):
-        self.places[self.current_player] = self.places[self.current_player] + roll
-        if self.places[self.current_player] > 11:
-            self.places[self.current_player] = self.places[self.current_player] - 12
+        self._current_player_obj.place = self._current_player_obj.place + roll
+        if self._current_player_obj.place > 11:
+            self._current_player_obj.place = self._current_player_obj.place - 12
 
         print(self.players[self.current_player] + \
                     '\'s new location is ' + \
-                    str(self.places[self.current_player]))
+                    str(self._current_player_obj.place))
         print("The category is %s" % self._current_category)
         self._ask_question()
 
@@ -95,10 +99,10 @@ class Game:
 
     @property
     def _current_category(self):
-        return self._CATEGORIES[self.places[self.current_player] % 4]
+        return self._CATEGORIES[self._current_player_obj.place % 4]
 
     def was_correctly_answered(self):
-        if self.in_penalty_box[self.current_player]:
+        if self._current_player_obj.in_penalty_box:
             if self.is_getting_out_of_penalty_box:
                 return self._award_coin_and_advance_turn('Answer was correct!!!!')
             else:
@@ -109,10 +113,10 @@ class Game:
 
     def _award_coin_and_advance_turn(self, message):
         print(message)
-        self.purses[self.current_player] += 1
+        self._current_player_obj.purse += 1
         print(self.players[self.current_player] + \
             ' now has ' + \
-            str(self.purses[self.current_player]) + \
+            str(self._current_player_obj.purse) + \
             ' Gold Coins.')
 
         winner = self._did_player_win()
@@ -127,13 +131,13 @@ class Game:
     def wrong_answer(self):
         print('Question was incorrectly answered')
         print(self.players[self.current_player] + " was sent to the penalty box")
-        self.in_penalty_box[self.current_player] = True
+        self._current_player_obj.in_penalty_box = True
 
         self._advance_turn()
         return True
 
     def _did_player_win(self):
-        return not (self.purses[self.current_player] == 6)
+        return not (self._current_player_obj.purse == 6)
 
 
 from random import randrange
