@@ -95,7 +95,7 @@ class Game:
                 self._advance_turn()
                 return True
         else:
-            return self._award_coin_and_advance_turn("Answer was corrent!!!!")
+            return self._award_coin_and_advance_turn('Answer was correct!!!!')
 
     def _award_coin_and_advance_turn(self, message):
         print(message)

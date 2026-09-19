@@ -37,7 +37,8 @@ Catálogo de referencia: Fowler, *Refactoring* (2006) / Refactoring Guru.
 - `is_playable()` (línea 27-28) nunca se invoca ni en `roll`, ni en `add`, ni en el bucle de `__main__` — se puede jugar con 0 o 1 jugadores sin que nada lo impida. Es una regla de negocio declarada pero no aplicada.
 
 ## 9. Defecto funcional (no es un code smell de Fowler, pero se documenta)
-- Línea 120: `print("Answer was corrent!!!!")` — typo que hace que el mensaje sea inconsistente con la línea 99 (`'Answer was correct!!!!'`). Se decide conscientemente si se corrige durante el refactoring (cambiaría el output observable, así que se documentará como cambio de comportamiento explícito, no como refactoring puro).
+- Línea 120 (original): `print("Answer was corrent!!!!")` — typo que hacía que el mensaje fuera inconsistente con la línea 99 (`'Answer was correct!!!!'`).
+- **Resuelto** en el paso 6 del refactoring como una corrección de comportamiento explícita y separada (cambia el output observable, por eso no se mezcló con los pasos de refactoring puro). El test que documentaba el defecto se actualizó en el mismo commit para reflejar el texto correcto.
 
 ## Resumen para el video
 | Code smell | Ubicación principal |

@@ -203,9 +203,10 @@ class TestWasCorrectlyAnswered:
         assert game.purses[0] == 1
         assert game.current_player == 1
         out = capsys.readouterr().out
-        # NOTA: se documenta el typo real del mensaje ("corrent") tal como
-        # existe hoy en el codigo original.
-        assert "Answer was corrent!!!!" in out
+        # NOTA: el typo original ("corrent") fue corregido a "correct" como
+        # una correccion de defecto explicita, separada del refactoring puro
+        # (ver docs/01-analisis-code-smells.md, seccion 9).
+        assert "Answer was correct!!!!" in out
         assert "Chet now has 1 Gold Coins." in out
 
     def test_correct_answer_not_in_penalty_box_wraps_turn_to_first_player(self):
