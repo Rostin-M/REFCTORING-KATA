@@ -93,8 +93,7 @@ class Game:
             if self.is_getting_out_of_penalty_box:
                 return self._award_coin_and_advance_turn('Answer was correct!!!!')
             else:
-                self.current_player += 1
-                if self.current_player == len(self.players): self.current_player = 0
+                self._advance_turn()
                 return True
         else:
             return self._award_coin_and_advance_turn("Answer was corrent!!!!")
@@ -108,18 +107,20 @@ class Game:
             ' Gold Coins.')
 
         winner = self._did_player_win()
-        self.current_player += 1
-        if self.current_player == len(self.players): self.current_player = 0
+        self._advance_turn()
 
         return winner
+
+    def _advance_turn(self):
+        self.current_player += 1
+        if self.current_player == len(self.players): self.current_player = 0
 
     def wrong_answer(self):
         print('Question was incorrectly answered')
         print(self.players[self.current_player] + " was sent to the penalty box")
         self.in_penalty_box[self.current_player] = True
 
-        self.current_player += 1
-        if self.current_player == len(self.players): self.current_player = 0
+        self._advance_turn()
         return True
 
     def _did_player_win(self):
